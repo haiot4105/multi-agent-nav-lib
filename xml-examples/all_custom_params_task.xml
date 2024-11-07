@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <root>
-	<default_agent model_type="diff_drive" size="42.0" r_vis="30.0" v_max="100.0" v_min="84.0" w_max="12.0" w_min="87.0"/>
+	<default_agent model_type="diff_drive" size="68.0" r_vis="57.0" v_max="68.0" v_min="64.0" w_max="36.0" w_min="54.0"/>
 	<agents number="2">
-		<agent id="0" s.x="74.5" s.y="64.5" s.th="3.674170794412994" g.x="60.5" g.y="81.5" g.th="4.798364673019537" model_type="diff_drive" size="42.0" r_vis="30.0" v_max="100.0" v_min="84.0" w_max="12.0" w_min="87.0"/>
-		<agent id="1" s.x="51.5" s.y="84.5" s.th="5.813495231425338" g.x="75.5" g.y="76.5" g.th="1.8261040124072072" model_type="holonomic" size="0.0" r_vis="40.0" vel_max="58.0"/>
+		<agent id="0" s.x="75.5" s.y="96.5" s.th="3.377398001601135" g.x="10.5" g.y="11.5" g.th="2.995031125848783" model_type="diff_drive" size="68.0" r_vis="57.0" v_max="68.0" v_min="64.0" w_max="36.0" w_min="54.0"/>
+		<agent id="1" s.x="24.5" s.y="41.5" s.th="3.008969172546417" g.x="2.5" g.y="43.5" g.th="3.2933796995838116" model_type="holonomic" size="7.0" r_vis="9.0" vel_max="47.0"/>
 	</agents>
 </root>

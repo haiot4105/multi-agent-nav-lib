@@ -15,6 +15,7 @@ Please note that not all functions are fully implemented. The `create_log_file` 
 a placeholder and will need to be developed further to support log file creation.
 """
 
+from re import A
 from lxml import etree
 import xml.dom.minidom
 import numpy as np
@@ -26,7 +27,6 @@ from typing import List, Optional, Tuple
 sys.path.append("../../")
 import manavlib.common.params as params
 from manavlib.common.params import BaseAgentParams, BaseAlgParams, ExperimentParams
-
 
 
 # XML Tag and Parameter Constants
@@ -215,7 +215,9 @@ def create_agents_file(
     file.close()
 
 
-def create_config_file(path: str, alg_params: BaseAlgParams, exp_params: ExperimentParams) -> None:
+def create_config_file(
+    path: str, alg_params: BaseAlgParams, exp_params: ExperimentParams
+) -> None:
     """
     Creates an XML file with experiment and algorithm configurations.
 
@@ -263,12 +265,12 @@ def create_config_file(path: str, alg_params: BaseAlgParams, exp_params: Experim
 def create_log_file(path: str) -> None:
     """
     Placeholder function for creating an XML log file.
-    
+
     Parameters
     ----------
     path : str
         The file path where the log XML will be saved.
-        
+
     Raises
     ------
     NotImplementedError
@@ -277,7 +279,9 @@ def create_log_file(path: str) -> None:
     raise NotImplementedError
 
 
-def read_log_file(path: str, read_paths: bool = True) -> Tuple[Tuple[int, int, int, float, int, int], Optional[npt.NDArray]]:
+def read_log_file(
+    path: str, read_paths: bool = True
+) -> Tuple[Tuple[int, int, int, float, int, int], Optional[npt.NDArray]]:
     """
     Reads an XML log file and extracts summary and path data if available.
 
@@ -398,9 +402,11 @@ def get_agent_params_type(agent_type: str) -> Optional[type]:
     return None
 
 
-def read_xml_agents(path: str) -> Tuple[BaseAgentParams, npt.NDArray, npt.NDArray, List[BaseAgentParams]]:
+def read_xml_agents(
+    path: str,
+) -> Tuple[BaseAgentParams, npt.NDArray, npt.NDArray, List[BaseAgentParams]]:
     """
-    Reads an XML file defining agent configurations and extracts start states, goal states, 
+    Reads an XML file defining agent configurations and extracts start states, goal states,
     and agent-specific parameters.
 
     Parameters
@@ -423,7 +429,13 @@ def read_xml_agents(path: str) -> Tuple[BaseAgentParams, npt.NDArray, npt.NDArra
     default_agent_params = get_agent_params_type(agent_type)()
     for key, value in default_agent_params.__dict__.items():
         field_type = type(value)
-        default_agent_params.__dict__[key] = field_type(default_agent_tag.get(key))
+        if field_type is bool:
+            default_agent_params.__dict__[key] = default_agent_tag.get(key).lower() in {
+                "true",
+                "1",
+            }
+        else:
+            default_agent_params.__dict__[key] = field_type(default_agent_tag.get(key))
 
     agents_tag = root_tag.find(AGENTS_TAG)
     agents_num = int(agents_tag.get(NUM_PARAM))
@@ -454,7 +466,13 @@ def read_xml_agents(path: str) -> Tuple[BaseAgentParams, npt.NDArray, npt.NDArra
 
             for key, value in current_params.__dict__.items():
                 field_type = type(value)
-                current_params.__dict__[key] = field_type(agent_tag.get(key))
+                if field_type is bool:
+                    current_params.__dict__[key] = agent_tag.get(key).lower() in {
+                        "true",
+                        "1",
+                    }
+                else:
+                    current_params.__dict__[key] = field_type(agent_tag.get(key))
 
         if issubclass(type(current_params), params.BaseDiscreteAgentParams):
             start_states[a_id, 0] = float(agent_tag.get(START_I_PARAM))
@@ -526,14 +544,22 @@ def read_xml_config(path: str) -> Tuple[ExperimentParams, BaseAlgParams]:
     exp_params = params.ExperimentParams()
     for key, value in exp_params.__dict__.items():
         field_type = type(value)
-        exp_params.__dict__[key] = field_type(experiment_tag.find(key).text)
+        if field_type is bool:
+            exp_params.__dict__[key] = experiment_tag.find(key).text.lower() in {
+                "true",
+                "1",
+            }
+        else:
+            exp_params.__dict__[key] = field_type(experiment_tag.find(key).text)
 
     alg_tag = root_tag.find(ALG_PARAM_TAG)
     alg_name = alg_tag.get(ALG_NAME_TAG)
     alg_params = get_alg_params_name(alg_name)()
     for key, value in alg_params.__dict__.items():
         field_type = type(value)
-        alg_params.__dict__[key] = field_type(alg_tag.find(key).text)
-        
+        if field_type is bool:
+            alg_params.__dict__[key] = alg_tag.find(key).text.lower() in {"true", "1"}
+        else:
+            alg_params.__dict__[key] = field_type(alg_tag.find(key).text)
 
     return exp_params, alg_params

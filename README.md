@@ -29,7 +29,7 @@ experiments.
 * `manavlib.io.tswap_io`: functions to support the setup, conversion, and processing of multi-agent pathfinding experiments to evaluate the TSWAP algorithm.
 * `manavlib.utils`: various auxiliary tools. Сurrently include functions for finding paths on grids.
 
-Examples of XML files are located in the xml-examples folder. You can find usage examples for the manavlib.common.params and manavlib.io.xml_io modules in the Jupyter Notebook test/xml_io_test.ipynb.
+Examples of XML files are located in the `xml-examples` folder. You can find usage examples for the `manavlib.common.params` and `manavlib.io.xml_io` modules in the Jupyter Notebook `test/xml_io_test.ipynb`.
 
 ## Scripts
 
