@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<root>
+	<experiment>
+		<timestep>91.0</timestep>
+		<xy_goal_tolerance>82.0</xy_goal_tolerance>
+		<max_steps>40</max_steps>
+		<some_param1>69</some_param1>
+		<some_param2>82.0</some_param2>
+	</experiment>
+	<algorithm name="test_alg">
+		<a_param>3</a_param>
+		<b_param>5.0</b_param>
+	</algorithm>
+</root>
