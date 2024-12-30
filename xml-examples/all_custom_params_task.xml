@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <root>
-	<default_agent model_type="holonomic" size="44.0" r_vis="95.0" vel_max="70.0"/>
+	<default_agent model_type="diff_drive" size="94.0" r_vis="47.0" v_max="88.0" v_min="17.0" w_max="56.0" w_min="28.0"/>
 	<agents number="2">
-		<agent id="0" s.x="41.5" s.y="10.5" s.th="2.958935152129407" g.x="50.5" g.y="58.5" g.th="5.58201555927494" model_type="holonomic" size="44.0" r_vis="95.0" vel_max="70.0"/>
-		<agent id="1" s.x="78.5" s.y="50.5" s.th="0.10168232769908343" g.x="0.5" g.y="16.5" g.th="1.495203504956078" model_type="diff_drive" size="39.0" r_vis="75.0" v_max="25.0" v_min="35.0" w_max="74.0" w_min="27.0"/>
+		<agent id="0" s.x="74.5" s.y="60.5" s.th="2.2276081811415587" g.x="83.5" g.y="99.5" g.th="1.45032694061039" model_type="diff_drive" size="94.0" r_vis="47.0" v_max="88.0" v_min="17.0" w_max="56.0" w_min="28.0"/>
+		<agent id="1" s.x="68.5" s.y="85.5" s.th="2.2185305778020425" g.x="75.5" g.y="95.5" g.th="3.4978894268422485" model_type="holonomic" size="4.0" r_vis="37.0" vel_max="28.0"/>
 	</agents>
 </root>
