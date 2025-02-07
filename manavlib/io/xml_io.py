@@ -23,6 +23,7 @@ import sys
 from copy import copy, deepcopy
 import numpy.typing as npt
 from typing import List, Optional, Tuple, Union, Iterable
+import json
 
 sys.path.append("../../")
 import manavlib.common.params as params
@@ -259,7 +260,11 @@ def create_config_file(
     exp_params_tag = etree.SubElement(root_tag, EXP_PARAM_TAG)
     for key, value in exp_params_dict.items():
         curr_exp_param_tag = etree.SubElement(exp_params_tag, key)
-        curr_exp_param_tag.text = str(value)
+        if type(value) is type(np.zeros(0)):
+            value = value.astype(np.float64)
+            curr_exp_param_tag.text = json.dumps(value.tolist())
+        else:
+            curr_exp_param_tag.text = str(value)
 
 
 
@@ -272,7 +277,12 @@ def create_config_file(
         alg_params_tag.set(ALG_NAME_TAG, curr_params.alg_name)
         for key, value in alg_params_dict.items():
             curr_alg_params_tag = etree.SubElement(alg_params_tag, key)
-            curr_alg_params_tag.text = str(value)
+            if type(value) is type(np.zeros(0)):
+                value = value.astype(np.float64)
+                curr_alg_params_tag.text = json.dumps(value.tolist())
+            else:
+                curr_alg_params_tag.text = str(value)
+            
 
     tree = etree.ElementTree(root_tag)
     file = open(path, "w")
@@ -594,6 +604,9 @@ def read_xml_config(path: str) -> Tuple[ExperimentParams, BaseAlgParams]:
                 "true",
                 "1",
             }
+        elif field_type is type(np.zeros(0)):
+            array_str = experiment_tag.find(key).text
+            exp_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
         else:
             exp_params.__dict__[key] = field_type(experiment_tag.find(key).text)
 
@@ -605,6 +618,9 @@ def read_xml_config(path: str) -> Tuple[ExperimentParams, BaseAlgParams]:
             field_type = type(value)
             if field_type is bool:
                 alg_params.__dict__[key] = alg_tag.find(key).text.lower() in {"true", "1"}
+            elif field_type is type(np.zeros(0)):
+                array_str = alg_tag.find(key).text
+                alg_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
             else:
                 alg_params.__dict__[key] = field_type(alg_tag.find(key).text)
         all_alg_params.append(alg_params)

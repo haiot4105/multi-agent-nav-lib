@@ -1,18 +1,20 @@
 <?xml version="1.0" ?>
 <root>
 	<experiment>
-		<timestep>79.0</timestep>
-		<xy_goal_tolerance>71.0</xy_goal_tolerance>
-		<max_steps>43</max_steps>
-		<some_param1>72</some_param1>
-		<some_param2>10.0</some_param2>
+		<timestep>90.0</timestep>
+		<xy_goal_tolerance>13.0</xy_goal_tolerance>
+		<max_steps>65</max_steps>
+		<some_param1>60</some_param1>
+		<some_param2>17.0</some_param2>
 		<c_param>True</c_param>
 		<d_param>abcd</d_param>
 	</experiment>
 	<algorithm name="test_alg">
-		<a_param>10</a_param>
-		<b_param>18.0</b_param>
+		<a_param>35</a_param>
+		<b_param>40.0</b_param>
 		<c_param>False</c_param>
 		<d_param>abc</d_param>
+		<array_param>[1.0, 2.0, 3.0, 4.0]</array_param>
+		<matrix_param>[[-1.0, -1.0, -1.0], [-1.0, -1.0, -1.0]]</matrix_param>
 	</algorithm>
 </root>
