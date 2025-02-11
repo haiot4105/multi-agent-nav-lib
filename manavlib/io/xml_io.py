@@ -183,7 +183,11 @@ def create_agents_file(
     default_params_tag = etree.SubElement(root_tag, DEFAULT_AGENT_TAG)
     default_params_tag.set(DYN_MODEL_TYPE_PARAM, default_agent_params.model_name)
     for key, value in default_agent_params_dict.items():
-        default_params_tag.set(key, str(value))
+        if type(value) is type(np.zeros(0)):
+            value = value.astype(np.float64)
+            default_params_tag.set(key, json.dumps(value.tolist()))
+        else:
+            default_params_tag.set(key, str(value))
 
     agents_num = len(start_states)
 
@@ -220,7 +224,11 @@ def create_agents_file(
             agent_params_dict = agents_params[id].__dict__
             agent_tag.set(DYN_MODEL_TYPE_PARAM, agents_params[id].model_name)
             for key, value in agent_params_dict.items():
-                agent_tag.set(key, str(value))
+                if type(value) is type(np.zeros(0)):
+                    value = value.astype(np.float64)
+                    agent_tag.set(key, json.dumps(value.tolist()))
+                else:
+                    agent_tag.set(key, str(value))
 
     tree = etree.ElementTree(root_tag)
     file = open(path, "w")
@@ -489,6 +497,9 @@ def read_xml_agents(
                 "true",
                 "1",
             }
+        elif field_type is type(np.zeros(0)):
+            array_str = default_agent_tag.get(key)
+            default_agent_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
         else:
             default_agent_params.__dict__[key] = field_type(default_agent_tag.get(key))
 
@@ -526,6 +537,9 @@ def read_xml_agents(
                         "true",
                         "1",
                     }
+                elif field_type is type(np.zeros(0)):
+                    array_str = agent_tag.get(key)
+                    current_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
                 else:
                     current_params.__dict__[key] = field_type(agent_tag.get(key))
 

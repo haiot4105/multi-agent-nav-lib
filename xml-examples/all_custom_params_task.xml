@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 <root>
-	<default_agent model_type="diff_drive" size="35.0" r_vis="38.0" v_max="16.0" v_min="9.0" w_max="81.0" w_min="28.0"/>
-	<agents number="2">
-		<agent id="0" s.x="90.5" s.y="79.5" s.th="3.047315216680809" g.x="28.5" g.y="16.5" g.th="0.2823261321097069" model_type="diff_drive" size="35.0" r_vis="38.0" v_max="16.0" v_min="9.0" w_max="81.0" w_min="28.0"/>
-		<agent id="1" s.x="15.5" s.y="48.5" s.th="3.4463595518193815" g.x="22.5" g.y="3.5" g.th="5.82422886473801" model_type="holonomic" size="52.0" r_vis="96.0" vel_max="45.0"/>
+	<default_agent model_type="holonomic" size="95.0" r_vis="24.0" vel_max="88.0"/>
+	<agents number="3">
+		<agent id="0" s.x="42.5" s.y="69.5" s.th="5.2049080362858495" g.x="60.5" g.y="94.5" g.th="2.252005546433693" model_type="holonomic" size="95.0" r_vis="24.0" vel_max="88.0"/>
+		<agent id="1" s.x="67.5" s.y="80.5" s.th="5.208336733035021" g.x="19.5" g.y="83.5" g.th="2.709665093114307" model_type="diff_drive" size="90.0" r_vis="55.0" v_max="10.0" v_min="80.0" w_max="35.0" w_min="45.0"/>
+		<agent id="2" s.x="5.5" s.y="0.5" s.th="0.5780230550640475" g.x="13.5" g.y="53.5" g.th="5.990729583085198" model_type="unc_diff_drive" size="91.0" r_vis="41.0" v_max="85.0" v_min="45.0" w_max="9.0" w_min="93.0" control_noise_std="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"/>
 	</agents>
 </root>

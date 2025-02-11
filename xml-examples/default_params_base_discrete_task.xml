@@ -1,16 +1,16 @@
 <?xml version="1.0" ?>
 <root>
-	<default_agent model_type="base_discrete" size="55.0" r_vis="11"/>
+	<default_agent model_type="base_discrete" size="61.0" r_vis="88"/>
 	<agents number="10">
-		<agent id="0" s.i="8" s.j="4" g.i="5" g.j="6"/>
-		<agent id="1" s.i="0" s.j="1" g.i="1" g.j="8"/>
-		<agent id="2" s.i="1" s.j="4" g.i="1" g.j="0"/>
-		<agent id="3" s.i="3" s.j="1" g.i="6" g.j="4"/>
-		<agent id="4" s.i="4" s.j="6" g.i="8" g.j="9"/>
-		<agent id="5" s.i="9" s.j="8" g.i="8" g.j="8"/>
-		<agent id="6" s.i="5" s.j="4" g.i="5" g.j="5"/>
-		<agent id="7" s.i="3" s.j="4" g.i="7" g.j="2"/>
-		<agent id="8" s.i="1" s.j="1" g.i="9" g.j="2"/>
-		<agent id="9" s.i="1" s.j="7" g.i="4" g.j="7"/>
+		<agent id="0" s.i="3" s.j="6" g.i="8" g.j="0"/>
+		<agent id="1" s.i="9" s.j="3" g.i="1" g.j="8"/>
+		<agent id="2" s.i="0" s.j="9" g.i="1" g.j="1"/>
+		<agent id="3" s.i="1" s.j="7" g.i="2" g.j="7"/>
+		<agent id="4" s.i="8" s.j="4" g.i="6" g.j="3"/>
+		<agent id="5" s.i="0" s.j="4" g.i="5" g.j="7"/>
+		<agent id="6" s.i="0" s.j="0" g.i="5" g.j="0"/>
+		<agent id="7" s.i="3" s.j="8" g.i="0" g.j="7"/>
+		<agent id="8" s.i="8" s.j="8" g.i="6" g.j="6"/>
+		<agent id="9" s.i="0" s.j="8" g.i="3" g.j="3"/>
 	</agents>
 </root>
