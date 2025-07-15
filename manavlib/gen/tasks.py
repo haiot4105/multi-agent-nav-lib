@@ -85,9 +85,6 @@ def create_circle_instance(
         st_y += circ_center[1]
         g_y += circ_center[1]
 
-        if agents_num == 8:
-            print(st_x, st_y, g_x, g_y)
-
         dx = g_x - st_x
         dy = g_y - st_y
 
@@ -258,8 +255,8 @@ def create_mesh_instance(
 
     Returns
     -------
-    Tuple[np.ndarray, np.ndarray]
-        Two numpy arrays representing the start and goal states of the agents, respectively.
+    Tuple[np.ndarray, np.ndarray, np.ndarray]
+        Two numpy arrays representing the start and goal states of the agents, respectively. One numpy array with shuffled agent IDs indicating the goal assignment on the mesh.
     """
     start_states = np.zeros((agents_num, 5), dtype=np.float64)
     goal_states = np.zeros((agents_num, 5), dtype=np.float64)
@@ -295,7 +292,7 @@ def create_mesh_instance(
             goal_states[gl_agent, 3] = 0.0
             goal_states[gl_agent, 4] = 0.0
 
-    return start_states, goal_states
+    return start_states, goal_states, goal_ids
 
 
 def create_random_grid_map_instance(

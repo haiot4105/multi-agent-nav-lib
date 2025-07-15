@@ -7,7 +7,7 @@ import numpy.typing as npt
 import numpy as np
 from typing import List
 
-def convert_xy_to_ij(xy: npt.NDArray, grid_h: int, cs: float=1.0) -> List[int, int]:
+def convert_xy_to_ij(xy: npt.NDArray, grid_h: int, cs: float=1.0) -> List[int]:
     """
     Convert 2D coordinates (x, y) to grid indices (i, j).
 
