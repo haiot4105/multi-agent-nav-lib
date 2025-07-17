@@ -1,6 +1,6 @@
 """
 This module provides utility functions for converting between Cartesian (x, y) coordinates
-and grid indices (i, j) in grid.
+and grid indices (i, j).
 """
 
 import numpy.typing as npt

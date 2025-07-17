@@ -56,7 +56,7 @@ def create_empty_grid(
     if not (np.isclose(height * cell_size, y_size[1] - y_size[0])) or not (np.isclose(width * cell_size, x_size[1] - x_size[0])):
         return None
 
-    occupancy_grid = np.zeros((height, width), dtype=np.bool8)
+    occupancy_grid = np.zeros((height, width), dtype=np.bool)
 
     return height, width, occupancy_grid
 
@@ -91,7 +91,7 @@ def create_gap_scenario_grid(height: int, width: int, gaps: int) -> Tuple[int, i
         - `occupancy_grid` is a 2D numpy array where `1` indicates a wall or obstacle
           cell and `0` indicates a passable cell.
     """
-    occupancy_grid = np.zeros((height, width), dtype=np.bool8)
+    occupancy_grid = np.zeros((height, width), dtype=np.bool)
     occupancy_grid[0, :] = 1
     occupancy_grid[-1, :] = 1
     occupancy_grid[:, 0] = 1

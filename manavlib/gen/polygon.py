@@ -417,8 +417,6 @@ def compute_poligons(grid: npt.NDArray, cell_size: float) -> List[List[npt.NDArr
 
                     polygons[tuple(polygon.begin)] = polygon
                     polygons[tuple(polygon.end)] = polygon
-        if len(polygons) != 1:
-            print("Error", polygons)
         result = result + list(polygons.values())
     result = __convert_to_points_list(result)
 
