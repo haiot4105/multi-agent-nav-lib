@@ -1,5 +1,5 @@
 """
-This module provides functions to create different types of grid maps, which can be used
+This module provides functions to create or modify different types of grid maps, which can be used
 as environments for multi-agent navigation experiments. The generated grids are represented
 as 2D numpy arrays, where each cell can be passable or an obstacle.
 """
@@ -53,19 +53,15 @@ def create_empty_grid(
     height = int((y_size[1] - y_size[0]) / cell_size)
     width = int((x_size[1] - x_size[0]) / cell_size)
 
-    if not (np.isclose(height * cell_size, y_size[1] - y_size[0])) or not (
-        np.isclose(width * cell_size, x_size[1] - x_size[0])
-    ):
+    if not (np.isclose(height * cell_size, y_size[1] - y_size[0])) or not (np.isclose(width * cell_size, x_size[1] - x_size[0])):
         return None
 
-    occupancy_grid = np.zeros((height, width), dtype=np.bool8)
+    occupancy_grid = np.zeros((height, width), dtype=np.bool)
 
     return height, width, occupancy_grid
 
 
-def create_gap_scenario_grid(
-    height: int, width: int, gaps: int
-) -> Tuple[int, int, npt.NDArray]:
+def create_gap_scenario_grid(height: int, width: int, gaps: int) -> Tuple[int, int, npt.NDArray]:
     """
     Creates a grid with walls around the edges and a central wall with specified gaps
     for pathfinding scenarios.
@@ -95,7 +91,7 @@ def create_gap_scenario_grid(
         - `occupancy_grid` is a 2D numpy array where `1` indicates a wall or obstacle
           cell and `0` indicates a passable cell.
     """
-    occupancy_grid = np.zeros((height, width), dtype=np.bool8)
+    occupancy_grid = np.zeros((height, width), dtype=np.bool)
     occupancy_grid[0, :] = 1
     occupancy_grid[-1, :] = 1
     occupancy_grid[:, 0] = 1
@@ -124,3 +120,38 @@ def create_gap_scenario_grid(
         occupancy_grid[gap_pose] = 0
 
     return height, width, occupancy_grid
+
+
+def reduce_cellsize(grid_map: npt.NDArray, cs: float, n: int) -> Tuple[int, int, float, npt.NDArray]:
+    """
+    Increase the resolution of a grid map by reducing the cell size.
+
+    This function expands the grid by dividing each cell into `n x n` smaller cells, effectively
+    reducing the cell size by a factor of `n`. The resulting grid will have a higher resolution.
+
+    Parameters
+    ----------
+    grid_map : np.ndarray
+        The input grid map, where each cell represents some value (e.g., occupancy, cost, etc.).
+    cs : float
+        The original cell size (grid resolution).
+    n : int
+        The factor by which to subdivide each cell. Each cell in the original grid is replaced
+        by an `n x n` block of smaller cells.
+
+    Returns
+    -------
+    Tuple[int, int, float, np.ndarray]
+        A tuple containing:
+        - New height of the grid (`h * n`).
+        - New width of the grid (`w * n`).
+        - Updated cell size (`cs / n`).
+        - The new high-resolution grid map as a NumPy array.
+    """
+    h, w = grid_map.shape
+    new_grid = np.zeros((h*n, w*n), dtype=np.int8)
+    for i in range(h):
+        for j in range(w):
+            new_grid[n*i:n*(i+1), n*j:n*(j+1)] = grid_map[i, j]
+
+    return h * n, w * n, cs / n, new_grid

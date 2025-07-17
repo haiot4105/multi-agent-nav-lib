@@ -82,7 +82,7 @@ def read_map_file(file_path: str) -> Tuple[int, int, npt.NDArray]:
 
     height = int(file.readline().split()[1])
     width = int(file.readline().split()[1])
-    occupancy_grid = np.zeros((height, width), dtype=np.bool8)
+    occupancy_grid = np.zeros((height, width), dtype=np.bool)
 
     file.readline()
     for i in range(height):

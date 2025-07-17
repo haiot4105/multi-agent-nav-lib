@@ -22,7 +22,8 @@ import numpy as np
 import sys
 from copy import copy, deepcopy
 import numpy.typing as npt
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union, Iterable
+import json
 
 sys.path.append("../../")
 import manavlib.common.params as params
@@ -70,8 +71,19 @@ ALG_NAME_TAG = "name"
 EXP_PARAM_TAG = "experiment"
 ALG_PARAM_TAG = "algorithm"
 
+POLYGON_OBSTACLES_TAG = "polygon_obstacles"
+POLYGON_OBSTACLE_TAG = "obstacle"
+POLYGON_VERTEX_TAG = "vertex"
+VERTEX_X_PARAM = "v.x"
+VERTEX_Y_PARAM = "v.y"
 
-def create_map_file(path: str, occupancy_grid: npt.NDArray, cell_size: float) -> None:
+
+def create_map_file(
+    path: str,
+    occupancy_grid: npt.NDArray,
+    cell_size: float,
+    obstacles: List[List[npt.NDArray]] | None = None,
+) -> None:
     """
     Creates an XML map file with grid data in occupancy format.
 
@@ -84,6 +96,10 @@ def create_map_file(path: str, occupancy_grid: npt.NDArray, cell_size: float) ->
         and `0` represents passable areas.
     cell_size : float
         The size of each cell in the grid.
+    obstacles : List[List[npt.NDArray]] | None
+        A list of polygons, where each polygon is represented as a list of points 
+        in Cartesian coordinates (in counterclockwise order). If provided, these 
+        polygons will be included as obstacle data in the XML file.
     """
     root_tag = etree.Element(ROOT_TAG)
     height = occupancy_grid.shape[0]
@@ -110,6 +126,15 @@ def create_map_file(path: str, occupancy_grid: npt.NDArray, cell_size: float) ->
             else:
                 row_str += "0 "
         row_tag.text = row_str[:-1]
+
+    if obstacles is not None:
+        obstacles_tag = etree.SubElement(root_tag, POLYGON_OBSTACLES_TAG)
+        for polygon in obstacles:
+            obstacle_tag = etree.SubElement(obstacles_tag, POLYGON_OBSTACLE_TAG)
+            for point in polygon:
+                vertex_tag = etree.SubElement(obstacle_tag, POLYGON_VERTEX_TAG)
+                vertex_tag.set(VERTEX_X_PARAM, str(point[0]))
+                vertex_tag.set(VERTEX_Y_PARAM, str(point[1]))
 
     tree = etree.ElementTree(root_tag)
     file = open(path, "w")
@@ -158,7 +183,11 @@ def create_agents_file(
     default_params_tag = etree.SubElement(root_tag, DEFAULT_AGENT_TAG)
     default_params_tag.set(DYN_MODEL_TYPE_PARAM, default_agent_params.model_name)
     for key, value in default_agent_params_dict.items():
-        default_params_tag.set(key, str(value))
+        if type(value) is type(np.zeros(0)):
+            value = value.astype(np.float64)
+            default_params_tag.set(key, json.dumps(value.tolist()))
+        else:
+            default_params_tag.set(key, str(value))
 
     agents_num = len(start_states)
 
@@ -195,7 +224,11 @@ def create_agents_file(
             agent_params_dict = agents_params[id].__dict__
             agent_tag.set(DYN_MODEL_TYPE_PARAM, agents_params[id].model_name)
             for key, value in agent_params_dict.items():
-                agent_tag.set(key, str(value))
+                if type(value) is type(np.zeros(0)):
+                    value = value.astype(np.float64)
+                    agent_tag.set(key, json.dumps(value.tolist()))
+                else:
+                    agent_tag.set(key, str(value))
 
     tree = etree.ElementTree(root_tag)
     file = open(path, "w")
@@ -216,7 +249,7 @@ def create_agents_file(
 
 
 def create_config_file(
-    path: str, alg_params: BaseAlgParams, exp_params: ExperimentParams
+    path: str, alg_params: Union[BaseAlgParams, Iterable[BaseAlgParams]], exp_params: ExperimentParams
 ) -> None:
     """
     Creates an XML file with experiment and algorithm configurations.
@@ -225,8 +258,8 @@ def create_config_file(
     ----------
     path : str
         The file path where the configuration XML will be saved.
-    alg_params : BaseAlgParams
-        Algorithm parameters for the experiment.
+    alg_params : BaseAlgParams | Iterable[BaseAlgParams]
+        Algorithms parameters for the experiment.
     exp_params : ExperimentParams
         Experiment parameters.
     """
@@ -235,14 +268,29 @@ def create_config_file(
     exp_params_tag = etree.SubElement(root_tag, EXP_PARAM_TAG)
     for key, value in exp_params_dict.items():
         curr_exp_param_tag = etree.SubElement(exp_params_tag, key)
-        curr_exp_param_tag.text = str(value)
+        if type(value) is type(np.zeros(0)):
+            value = value.astype(np.float64)
+            curr_exp_param_tag.text = json.dumps(value.tolist())
+        else:
+            curr_exp_param_tag.text = str(value)
 
-    alg_params_dict = alg_params.__dict__
-    alg_params_tag = etree.SubElement(root_tag, ALG_PARAM_TAG)
-    alg_params_tag.set(ALG_NAME_TAG, alg_params.alg_name)
-    for key, value in alg_params_dict.items():
-        curr_alg_params_tag = etree.SubElement(alg_params_tag, key)
-        curr_alg_params_tag.text = str(value)
+
+
+    if issubclass(type(alg_params), BaseAlgParams):
+        alg_params = [alg_params]
+
+    for curr_params in alg_params:
+        alg_params_dict = curr_params.__dict__
+        alg_params_tag = etree.SubElement(root_tag, ALG_PARAM_TAG)
+        alg_params_tag.set(ALG_NAME_TAG, curr_params.alg_name)
+        for key, value in alg_params_dict.items():
+            curr_alg_params_tag = etree.SubElement(alg_params_tag, key)
+            if type(value) is type(np.zeros(0)):
+                value = value.astype(np.float64)
+                curr_alg_params_tag.text = json.dumps(value.tolist())
+            else:
+                curr_alg_params_tag.text = str(value)
+            
 
     tree = etree.ElementTree(root_tag)
     file = open(path, "w")
@@ -336,9 +384,9 @@ def read_log_file(
         return tuple(summary)
 
 
-def read_xml_map(path: str) -> Tuple[int, int, float, npt.NDArray]:
+def read_xml_map(path: str) -> Union[Tuple[int, int, float, np.ndarray], Tuple[int, int, float, np.ndarray, List[List[npt.NDArray]]]]:
     """
-    Reads an XML file containing map data and returns map dimensions, cell size, and occupancy grid.
+    Reads an XML file containing environment data and returns map dimensions, cell size, and occupancy grid.
 
     Parameters
     ----------
@@ -347,8 +395,8 @@ def read_xml_map(path: str) -> Tuple[int, int, float, npt.NDArray]:
 
     Returns
     -------
-    Tuple[int, int, float, np.ndarray]
-        Width, height, cell size, and occupancy grid.
+    Tuple[int, int, float, np.ndarray] | Tuple[int, int, float, np.ndarray, List[List[npt.NDArray]]]
+        Width, height, cell size, occupancy grid, polygon obstacles (optional).
     """
 
     tree = etree.parse(path)
@@ -372,7 +420,22 @@ def read_xml_map(path: str) -> Tuple[int, int, float, npt.NDArray]:
     for i, row_tag in enumerate(grid_tag.findall(ROW_TAG)):
         row = row_tag.text
         occupancy_grid[i] = np.array(list(map(int, row.split())))
-    return width, height, cell_size, occupancy_grid
+
+    obstacles = []
+    obstacles_tag = root_tag.find(POLYGON_OBSTACLES_TAG)
+
+    if obstacles_tag is None:
+        return width, height, cell_size, occupancy_grid
+
+    for obstacle_tag in obstacles_tag.findall(POLYGON_OBSTACLE_TAG):
+        vertices = []
+        for vertex_tag in obstacle_tag.findall(POLYGON_VERTEX_TAG):
+            x = float(vertex_tag.get(VERTEX_X_PARAM))
+            y = float(vertex_tag.get(VERTEX_Y_PARAM))
+            vertices.append(np.array((x, y), dtype=np.float64))
+        obstacles.append(vertices)
+
+    return width, height, cell_size, occupancy_grid, obstacles
 
 
 def get_agent_params_type(agent_type: str) -> Optional[type]:
@@ -434,6 +497,9 @@ def read_xml_agents(
                 "true",
                 "1",
             }
+        elif field_type is type(np.zeros(0)):
+            array_str = default_agent_tag.get(key)
+            default_agent_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
         else:
             default_agent_params.__dict__[key] = field_type(default_agent_tag.get(key))
 
@@ -471,6 +537,9 @@ def read_xml_agents(
                         "true",
                         "1",
                     }
+                elif field_type is type(np.zeros(0)):
+                    array_str = agent_tag.get(key)
+                    current_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
                 else:
                     current_params.__dict__[key] = field_type(agent_tag.get(key))
 
@@ -533,8 +602,8 @@ def read_xml_config(path: str) -> Tuple[ExperimentParams, BaseAlgParams]:
 
     Returns
     -------
-    Tuple[ExperimentParams, BaseAlgParams]
-        Experiment parameters and algorithm parameters.
+    Tuple[ExperimentParams, BaseAlgParams | List[BaseAlgParams]]
+        Experiment parameters and algorithms parameters.
     """
 
     tree = etree.parse(path)
@@ -549,17 +618,27 @@ def read_xml_config(path: str) -> Tuple[ExperimentParams, BaseAlgParams]:
                 "true",
                 "1",
             }
+        elif field_type is type(np.zeros(0)):
+            array_str = experiment_tag.find(key).text
+            exp_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
         else:
             exp_params.__dict__[key] = field_type(experiment_tag.find(key).text)
 
-    alg_tag = root_tag.find(ALG_PARAM_TAG)
-    alg_name = alg_tag.get(ALG_NAME_TAG)
-    alg_params = get_alg_params_name(alg_name)()
-    for key, value in alg_params.__dict__.items():
-        field_type = type(value)
-        if field_type is bool:
-            alg_params.__dict__[key] = alg_tag.find(key).text.lower() in {"true", "1"}
-        else:
-            alg_params.__dict__[key] = field_type(alg_tag.find(key).text)
+    all_alg_params = []
+    for alg_tag in root_tag.findall(ALG_PARAM_TAG):
+        alg_name = alg_tag.get(ALG_NAME_TAG)
+        alg_params = get_alg_params_name(alg_name)()
+        for key, value in alg_params.__dict__.items():
+            field_type = type(value)
+            if field_type is bool:
+                alg_params.__dict__[key] = alg_tag.find(key).text.lower() in {"true", "1"}
+            elif field_type is type(np.zeros(0)):
+                array_str = alg_tag.find(key).text
+                alg_params.__dict__[key] = np.array(json.loads(array_str), dtype=np.float64)
+            else:
+                alg_params.__dict__[key] = field_type(alg_tag.find(key).text)
+        all_alg_params.append(alg_params)
 
-    return exp_params, alg_params
+    if len(all_alg_params) == 1:
+        all_alg_params = all_alg_params[0]
+    return exp_params, all_alg_params

@@ -31,7 +31,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.0",  # Required
+    version="2.0",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -100,7 +100,7 @@ setup(
     # keywords="sample, setuptools, development",  # Optional
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
-    # package_dir={"": "src"},  # Optional
+    package_dir={"": "."},  # Optional
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
     #
@@ -110,19 +110,23 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(where="manavlib"),  # Required
+    packages=find_packages("."),  # Required
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. See
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.11, <4",
+    python_requires=">=3.10, <4",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/discussions/install-requires-vs-requirements/
-    # install_requires=["peppercorn"],  # Optional
+    install_requires=[
+        "numpy>=2.2.6",
+        "lxml>=5.2.1",
+        ],
+
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
     # syntax, for example:
@@ -131,10 +135,9 @@ setup(
     #
     # Similar to `install_requires` above, these must be valid existing
     # projects.
-    # extras_require={  # Optional
-    #     "dev": ["check-manifest"],
-    #     "test": ["coverage"],
-    # },
+    extras_require={  # Optional
+        "notebooks": ["notebook", "ipykernel"],
+    },
     # If there are data files included in your packages that need to be
     # installed, specify them here.
     # package_data={  # Optional
